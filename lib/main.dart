@@ -12,10 +12,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // Estado inicial: tema claro
+  // Estado actual del tema (claro por defecto)
   ThemeMode _themeMode = ThemeMode.light;
 
-  // Cambia entre claro y oscuro
   void _toggleTheme() {
     setState(() {
       _themeMode =
@@ -29,11 +28,11 @@ class _MyAppState extends State<MyApp> {
       title: 'Tema Claro y Oscuro',
       debugShowCheckedModeBanner: false,
 
-      // ☀️ Tema claro
+      // 🌞 Tema claro
       theme: ThemeData(
         brightness: Brightness.light,
-        colorScheme: const ColorScheme.light(
-          primary: Color.fromARGB(255, 42, 99, 25),
+        colorScheme: ColorScheme.light(
+          primary: Color(0xFF6750A4),
           onPrimary: Colors.white,
           background: Color(0xFFFFFBFE),
           onBackground: Color(0xFF1C1B1F),
@@ -44,8 +43,8 @@ class _MyAppState extends State<MyApp> {
       // 🌙 Tema oscuro
       darkTheme: ThemeData(
         brightness: Brightness.dark,
-        colorScheme: const ColorScheme.dark(
-          primary: Color.fromARGB(255, 158, 145, 30),
+        colorScheme: ColorScheme.dark(
+          primary: Color(0xFFD0BCFF),
           onPrimary: Color(0xFF381E72),
           background: Color(0xFF1C1B1F),
           onBackground: Color(0xFFE6E1E5),
@@ -53,7 +52,7 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
 
-      // Tema actual
+      // ⚙️ Tema actual (según el botón)
       themeMode: _themeMode,
 
       home: MyHomePage(
@@ -80,33 +79,16 @@ class MyHomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isDarkMode ? "🌙 Tema Oscuro" : "☀️ Tema Claro"),
+        title: Text(isDarkMode ? "Tema Oscuro" : "Tema Claro"),
         backgroundColor: theme.primary,
-        foregroundColor: theme.onPrimary,
       ),
       body: Center(
         child: ElevatedButton.icon(
           onPressed: onToggleTheme,
-
-          // 🌟 Ícono animado
-          icon: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 600),
-            transitionBuilder: (child, animation) => RotationTransition(
-              turns: Tween(begin: 0.75, end: 1.0).animate(animation),
-              child: FadeTransition(opacity: animation, child: child),
-            ),
-            child: Icon(
-              isDarkMode ? Icons.wb_sunny : Icons.nightlight_round,
-              key: ValueKey<bool>(isDarkMode),
-              size: 32,
-            ),
-          ),
-
-          // Texto dinámico
+          icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
           label: Text(
             isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro",
           ),
-
           style: ElevatedButton.styleFrom(
             backgroundColor: theme.primary,
             foregroundColor: theme.onPrimary,
@@ -117,4 +99,3 @@ class MyHomePage extends StatelessWidget {
     );
   }
 }
-
