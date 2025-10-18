@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Flutter code sample for [AppBar] with dynamic color, SnackBar, and Switch.
+/// Flutter code sample for [AppBar].
 
 final List<int> _items = List<int>.generate(51, (int index) => index);
 
@@ -13,7 +13,7 @@ class AppBarApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: const Color(0xff00BCD4)), // Cambiado a un nuevo color (cian)
+      theme: ThemeData(colorSchemeSeed: const Color.fromARGB(255, 12, 105, 67)),
       home: const AppBarExample(),
     );
   }
@@ -27,26 +27,8 @@ class AppBarExample extends StatefulWidget {
 }
 
 class _AppBarExampleState extends State<AppBarExample> {
-  bool shadowColor = false; 
+  bool shadowColor = false;
   double? scrolledUnderElevation;
-  Color appBarColor = const Color.fromARGB(255, 99, 97, 19);  final List<Color>_colors = [Colors.blue, const Color.fromARGB(255, 11, 241, 19), const Color.fromARGB(255, 54, 158, 94), const Color.fromARGB(255, 124, 36, 73), const Color.fromARGB(255, 65, 78, 97)];
-  int _currentColorIndex = 0;
-
-  void _changeAppBarColor() {
-    setState(() {
-      _currentColorIndex = (_currentColorIndex + 1) % _colors.length;
-      appBarColor = _colors[_currentColorIndex];
-    });
-  }
-
-  void _showElevationSnackBar() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('scrolledUnderElevation: ${scrolledUnderElevation ?? 'default'}'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,15 +40,7 @@ class _AppBarExampleState extends State<AppBarExample> {
       appBar: AppBar(
         title: const Text('AppBar Demo'),
         scrolledUnderElevation: scrolledUnderElevation,
-        //shadowColor: shadowColor ? Theme.of(context).colorScheme.shadow : null,
-        backgroundColor: appBarColor,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.color_lens),
-            tooltip: 'Change AppBar Color',
-            onPressed: _changeAppBarColor,
-          ),
-        ],
+        shadowColor: shadowColor ? Theme.of(context).colorScheme.shadow : null,
       ),
       body: GridView.builder(
         itemCount: _items.length,
@@ -89,6 +63,7 @@ class _AppBarExampleState extends State<AppBarExample> {
           }
           return Container(
             alignment: Alignment.center,
+            // tileColor: _items[index].isOdd ? oddItemColor : evenItemColor,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20.0),
               color: _items[index].isOdd ? oddItemColor : evenItemColor,
@@ -105,31 +80,28 @@ class _AppBarExampleState extends State<AppBarExample> {
             alignment: MainAxisAlignment.center,
             overflowSpacing: 5.0,
             children: <Widget>[
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Shadow Color'),
-                  Switch(
-                    value: shadowColor,
-                    onChanged: (bool value) {
-                      setState(() {
-                        shadowColor = value;
-                      });
-                    },
-                  ),
-                ],
+              ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    shadowColor = !shadowColor;
+                  });
+                },
+                icon: Icon(shadowColor ? Icons.visibility_off : Icons.visibility),
+                label: const Text('shadow color'),
               ),
               const SizedBox(width: 5),
               ElevatedButton(
                 onPressed: () {
-                  setState(() {
-                    if (scrolledUnderElevation == null) {
+                  if (scrolledUnderElevation == null) {
+                    setState(() {
+                      // Default elevation is 3.0, increment by 1.0.
                       scrolledUnderElevation = 4.0;
-                    } else {
+                    });
+                  } else {
+                    setState(() {
                       scrolledUnderElevation = scrolledUnderElevation! + 1.0;
-                    }
-                    _showElevationSnackBar();
-                  });
+                    });
+                  }
                 },
                 child: Text('scrolledUnderElevation: ${scrolledUnderElevation ?? 'default'}'),
               ),
