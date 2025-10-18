@@ -12,7 +12,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // Estado actual del tema (claro por defecto)
   ThemeMode _themeMode = ThemeMode.light;
 
   void _toggleTheme() {
@@ -25,13 +24,13 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tema Claro y Oscuro',
+      title: 'Tema con Deslizamiento en AppBar',
       debugShowCheckedModeBanner: false,
 
-      // 🌞 Tema claro
+      // Tema claro
       theme: ThemeData(
         brightness: Brightness.light,
-        colorScheme: ColorScheme.light(
+        colorScheme: const ColorScheme.light(
           primary: Color(0xFF6750A4),
           onPrimary: Colors.white,
           background: Color(0xFFFFFBFE),
@@ -40,10 +39,10 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
 
-      // 🌙 Tema oscuro
+      // Tema oscuro
       darkTheme: ThemeData(
         brightness: Brightness.dark,
-        colorScheme: ColorScheme.dark(
+        colorScheme: const ColorScheme.dark(
           primary: Color(0xFFD0BCFF),
           onPrimary: Color(0xFF381E72),
           background: Color(0xFF1C1B1F),
@@ -52,11 +51,10 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
 
-      // ⚙️ Tema actual (según el botón)
       themeMode: _themeMode,
 
       home: MyHomePage(
-        onToggleTheme: _toggleTheme,
+        onSwipe: _toggleTheme,
         isDarkMode: _themeMode == ThemeMode.dark,
       ),
     );
@@ -64,12 +62,12 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatelessWidget {
-  final VoidCallback onToggleTheme;
+  final VoidCallback onSwipe;
   final bool isDarkMode;
 
   const MyHomePage({
     super.key,
-    required this.onToggleTheme,
+    required this.onSwipe,
     required this.isDarkMode,
   });
 
@@ -78,24 +76,36 @@ class MyHomePage extends StatelessWidget {
     final theme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(isDarkMode ? "Tema Oscuro" : "Tema Claro"),
-        backgroundColor: theme.primary,
-      ),
-      body: Center(
-        child: ElevatedButton.icon(
-          onPressed: onToggleTheme,
-          icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
-          label: Text(
-            isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro",
-          ),
-          style: ElevatedButton.styleFrom(
+      // AppBar dentro de GestureDetector
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: GestureDetector(
+          onHorizontalDragEnd: (details) {
+            onSwipe(); // Cambia el tema al deslizar en el AppBar
+          },
+          child: AppBar(
+            title: Text(isDarkMode ? "🌙 Tema Oscuro" : "☀️ Tema Claro"),
             backgroundColor: theme.primary,
             foregroundColor: theme.onPrimary,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            centerTitle: true,
+          ),
+        ),
+      ),
+
+      body: Container(
+        color: theme.background,
+        child: Center(
+          child: Text(
+            "Desliza sobre la barra superior para cambiar el tema 👆",
+            style: TextStyle(
+              fontSize: 18,
+              color: theme.onBackground,
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
       ),
     );
   }
 }
+
