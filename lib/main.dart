@@ -1,111 +1,95 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+/// Flutter code sample for [AppBar].
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+List<String> titles = <String>['Cloud', 'Beach', 'Sunny'];
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
+void main() => runApp(const AppBarApp());
 
-class _MyAppState extends State<MyApp> {
-  ThemeMode _themeMode = ThemeMode.light;
-
-  void _toggleTheme() {
-    setState(() {
-      _themeMode =
-          _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
-    });
-  }
+class AppBarApp extends StatelessWidget {
+  const AppBarApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tema con Deslizamiento en AppBar',
-      debugShowCheckedModeBanner: false,
-
-      // Tema claro
-      theme: ThemeData(
-        brightness: Brightness.light,
-        colorScheme: const ColorScheme.light(
-          primary: Color(0xFF6750A4),
-          onPrimary: Colors.white,
-          background: Color(0xFFFFFBFE),
-          onBackground: Color(0xFF1C1B1F),
-        ),
-        useMaterial3: true,
-      ),
-
-      // Tema oscuro
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFFD0BCFF),
-          onPrimary: Color(0xFF381E72),
-          background: Color(0xFF1C1B1F),
-          onBackground: Color(0xFFE6E1E5),
-        ),
-        useMaterial3: true,
-      ),
-
-      themeMode: _themeMode,
-
-      home: MyHomePage(
-        onSwipe: _toggleTheme,
-        isDarkMode: _themeMode == ThemeMode.dark,
-      ),
+      theme: ThemeData(colorSchemeSeed: const Color.fromARGB(255, 36, 94, 13)),
+      home: const AppBarExample(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  final VoidCallback onSwipe;
-  final bool isDarkMode;
-
-  const MyHomePage({
-    super.key,
-    required this.onSwipe,
-    required this.isDarkMode,
-  });
+class AppBarExample extends StatelessWidget {
+  const AppBarExample({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
+    final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
+    const int tabsCount = 3;
 
-    return Scaffold(
-      // AppBar dentro de GestureDetector
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: GestureDetector(
-          onHorizontalDragEnd: (details) {
-            onSwipe(); // Cambia el tema al deslizar en el AppBar
+    return DefaultTabController(
+      initialIndex: 1,
+      length: tabsCount,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('AppBar Sample'),
+          // This check specifies which nested Scrollable's scroll notification
+          // should be listened to.
+          //
+          // When `ThemeData.useMaterial3` is true and scroll view has
+          // scrolled underneath the app bar, this updates the app bar
+          // background color and elevation.
+          //
+          // This sets `notification.depth == 1` to listen to the scroll
+          // notification from the nested `ListView.builder`.
+          notificationPredicate: (ScrollNotification notification) {
+            return notification.depth == 1;
           },
-          child: AppBar(
-            title: Text(isDarkMode ? "🌙 Tema Oscuro" : "☀️ Tema Claro"),
-            backgroundColor: theme.primary,
-            foregroundColor: theme.onPrimary,
-            centerTitle: true,
+          // The elevation value of the app bar when scroll view has
+          // scrolled underneath the app bar.
+          scrolledUnderElevation: 4.0,
+          shadowColor: Theme.of(context).shadowColor,
+          bottom: TabBar(
+            tabs: <Widget>[
+              Tab(icon: const Icon(Icons.cloud_outlined), text: titles[0]),
+              Tab(icon: const Icon(Icons.beach_access_sharp), text: titles[1]),
+              Tab(icon: const Icon(Icons.brightness_5_sharp), text: titles[2]),
+            ],
           ),
         ),
-      ),
-
-      body: Container(
-        color: theme.background,
-        child: Center(
-          child: Text(
-            "Desliza sobre la barra superior para cambiar el tema 👆",
-            style: TextStyle(
-              fontSize: 18,
-              color: theme.onBackground,
+        body: TabBarView(
+          children: <Widget>[
+            ListView.builder(
+              itemCount: 25,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  tileColor: index.isOdd ? oddItemColor : evenItemColor,
+                  title: Text('${titles[0]} $index'),
+                );
+              },
             ),
-            textAlign: TextAlign.center,
-          ),
+            ListView.builder(
+              itemCount: 25,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  tileColor: index.isOdd ? oddItemColor : evenItemColor,
+                  title: Text('${titles[1]} $index'),
+                );
+              },
+            ),
+            ListView.builder(
+              itemCount: 25,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  tileColor: index.isOdd ? oddItemColor : evenItemColor,
+                  title: Text('${titles[2]} $index'),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 }
-
